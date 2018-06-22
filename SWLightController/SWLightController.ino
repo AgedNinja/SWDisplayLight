@@ -1,5 +1,7 @@
 #include "credentials.h"
 #include <ESP8266WiFi.h>
+#include <WiFiClient.h>
+#include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
@@ -28,6 +30,27 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(45, PIN, NEO_GRB + NEO_KHZ800);
 
 const char* ssid = WIFI_SSID;
 const char* password = WIFI_PASSWD;
+
+ESP8266WebServer server(80);
+
+void handleRoot() {
+  server.send(200, "text/plain", "hello from esp8266!");
+}
+
+void handleNotFound(){
+  String message = "File Not Found\n\n";
+  message += "URI: ";
+  message += server.uri();
+  message += "\nMethod: ";
+  message += (server.method() == HTTP_GET)?"GET":"POST";
+  message += "\nArguments: ";
+  message += server.args();
+  message += "\n";
+  for (uint8_t i=0; i<server.args(); i++){
+    message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
+  }
+  server.send(404, "text/plain", message);
+}
 
 void setup() {
 
@@ -97,6 +120,22 @@ void setup() {
     if (F_CPU == 16000000) clock_prescale_set(clock_div_1);
   #endif
   // End of trinket special code
+
+
+  if (MDNS.begin("esp8266")) {
+    Serial.println("MDNS responder started");
+  }
+
+  server.on("/", handleRoot);
+
+  server.on("/on", lightOn);
+
+  server.on("/off", lightOff);
+
+  server.onNotFound(handleNotFound);
+
+  server.begin();
+  Serial.println("HTTP server started");
 }
 
 void loop() {
@@ -116,14 +155,45 @@ void loop() {
   //squadonfire(frequency, area, duration)
 
   //moveFleetForward(speed)  -> vary background intesity and have it slowly/quickly move backwards, creating illusion of movement...
-  
-  uint32_t i;
-  uint32_t illumination = strip.Color(0, 0, 100);
 
-  for (i=0; i< strip.numPixels(); i++) {
-    strip.setPixelColor(i, illumination);
+  server.handleClient();
+  ArduinoOTA.handle();
+}
+
+
+// Method to shut off all lights
+void lightOff() {
+  for (uint32_t i=0; i< strip.numPixels(); i++) {
+    strip.setPixelColor(i, 0);
   }
   strip.show();
 
-  ArduinoOTA.handle();
+  server.send(200, "text/plain", "Light turned off!");
+}
+
+
+// Method to turn on all lights
+void lightOn() {
+  uint32_t red = 10;
+  uint32_t green = 10;
+  uint32_t blue = 10;
+  
+  if (server.args() == 3) {
+      red = (uint32_t) server.arg(0).toInt();
+      green = (uint32_t) server.arg(1).toInt();
+      blue = (uint32_t) server.arg(2).toInt();
+  }
+
+  if (server.args() == 4) {
+      red = (uint32_t) server.arg(1).toInt();
+      green = (uint32_t) server.arg(2).toInt();
+      blue = (uint32_t) server.arg(3).toInt();
+  }
+  
+  for (uint16_t i=0; i< strip.numPixels(); i++) {
+    strip.setPixelColor(i, red, green, blue);
+  }
+  strip.show();
+
+  server.send(200, "text/plain", "Light turned on!");
 }
