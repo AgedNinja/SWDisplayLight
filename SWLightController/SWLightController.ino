@@ -118,7 +118,7 @@ void loop() {
   //moveFleetForward(speed)  -> vary background intesity and have it slowly/quickly move backwards, creating illusion of movement...
   
   uint32_t i;
-  uint32_t illumination = strip.Color(5, 300, 7);
+  uint32_t illumination = strip.Color(0, 0, 100);
 
   for (i=0; i< strip.numPixels(); i++) {
     strip.setPixelColor(i, illumination);
