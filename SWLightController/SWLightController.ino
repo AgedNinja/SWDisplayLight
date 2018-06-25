@@ -237,9 +237,9 @@ void moveFleet() {
       strip.setPixelColor(0, 0);
     } else {
       if (flicker < 56) {
-        strip.setPixelColor(0, 70+flicker, 70, 60);
+        strip.setPixelColor(0, 70+flicker, 70, 100);
       } else {
-        strip.setPixelColor(0, 70+flicker, 70, 80+flicker);
+        strip.setPixelColor(0, 50, 40, 150+flicker);
       }
     }
     
