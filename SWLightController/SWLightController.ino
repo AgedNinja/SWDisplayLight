@@ -160,6 +160,9 @@ void setup() {
   // Method to turn off all lights
   server.on("/moveFleet", moveFleet);
 
+  // Method to how a battle
+  server.on("/battle", battle);
+
   // Hanle our wonderful 404 error
   server.onNotFound(handleNotFound);
 
@@ -266,13 +269,25 @@ void moveFleet() {
 
 // Method to shut off all lights
 void lightOff() {
-  // Set all pixels to 'off'
-  for (uint16_t i=0; i< strip.numPixels(); i++) {
-    strip.setPixelColor(i, 0);
-  }
-  strip.show();
 
-  server.send(200, "text/plain", "Light turned off!");
+  server.send(200, "text/plain", "Turning Lights off!");
+
+  uint16_t r = 6;
+  uint16_t g =13;
+  uint16_t b = 9;
+
+  for (uint16_t j=0; j<14; j++) {
+
+    if (r !=0 ) r--;
+    if (g !=0 ) g--;
+    if (b !=0 ) b--;
+    
+    for (uint16_t i=0; i< strip.numPixels(); i++) {
+      strip.setPixelColor(i, r, g, b);
+    }
+    strip.show();
+    delay(100);
+  }
 }
 
 
@@ -306,5 +321,128 @@ void lightOn() {
   strip.show();
 
   server.send(200, "text/plain", "Light turned on!");
+}
+
+
+// Method to test Battle illuminations
+void battle() {
+    uint16_t i;
+  uint16_t j;
+  uint16_t speed = 6;
+  uint32_t illumination = strip.Color(6, 13, 9);
+  uint32_t turbolaser = strip.Color(0, 255, 0);
+  uint32_t rebellaser = strip.Color(255, 0, 0);
+  uint32_t explosion = strip.Color(255, 255, 255);
+  uint32_t explosion1 = strip.Color(255, 195, 77);
+
+  for (i=0; i< strip.numPixels(); i++) {
+    strip.setPixelColor(i, illumination);
+  }
+  strip.show();
+
+  for (i=strip.numPixels()-1; i> 0; i--) {
+        strip.setPixelColor(i, turbolaser);
+        strip.setPixelColor(i-1, turbolaser);
+        strip.setPixelColor(i-2, turbolaser);
+        strip.setPixelColor(i+1, illumination);
+        strip.show();
+        delay(speed);
+   };
+  strip.setPixelColor(1, illumination);
+  strip.setPixelColor(0, turbolaser);
+  strip.show();
+  delay(speed);
+  strip.setPixelColor(0, illumination);
+  strip.show();
+  delay(500);
+
+    for (i=strip.numPixels()-1; i> 0; i--) {
+        strip.setPixelColor(i, turbolaser);
+        strip.setPixelColor(i-1, turbolaser);
+        strip.setPixelColor(i-2, turbolaser);
+        strip.setPixelColor(i+1, illumination);
+        strip.show();
+        delay(speed);
+   };
+  strip.setPixelColor(1, illumination);
+  strip.setPixelColor(0, turbolaser);
+  strip.show();
+  delay(speed);
+  strip.setPixelColor(0, illumination);
+  strip.show();
+
+    for (i=strip.numPixels()-1; i> 0; i--) {
+        strip.setPixelColor(i, turbolaser);
+        strip.setPixelColor(i-1, turbolaser);
+        strip.setPixelColor(i-2, turbolaser);
+        strip.setPixelColor(i+1, illumination);
+        strip.show();
+        delay(speed);
+   };
+  strip.setPixelColor(1, illumination);
+  strip.setPixelColor(0, turbolaser);
+  strip.show();
+  delay(speed);
+  strip.setPixelColor(0, illumination);
+  strip.show();
+  delay(2000);
+
+  strip.setPixelColor(0, rebellaser);
+  strip.show();
+  delay(speed);
+
+
+  strip.setPixelColor(1, rebellaser);
+  strip.show();
+  delay(speed);
+
+  strip.setPixelColor(2, rebellaser);
+  strip.show();
+  delay(speed);
+
+  for (i=3; i< 25; i++) {
+    strip.setPixelColor(i, rebellaser);
+    strip.setPixelColor(i-3, illumination);
+    strip.show();
+    delay(speed);
+  }
+
+    strip.setPixelColor(25, explosion1);
+    strip.setPixelColor(24, explosion1);
+    strip.setPixelColor(23, explosion1);
+    strip.setPixelColor(22, illumination);
+    strip.show();
+    delay(100);
+    
+    strip.setPixelColor(25, illumination);
+    strip.setPixelColor(24, illumination);
+    strip.setPixelColor(23, illumination);
+    strip.show();
+    delay(100);
+
+
+    strip.setPixelColor(26, explosion);
+    strip.setPixelColor(25, explosion);
+    strip.setPixelColor(26, explosion);
+    strip.show();
+    delay(150);
+
+    strip.setPixelColor(26, illumination);
+    strip.setPixelColor(25, illumination);
+    strip.setPixelColor(24, illumination);
+    strip.show();
+    delay(75);
+
+
+    strip.setPixelColor(25, explosion1);
+    strip.setPixelColor(24, explosion1);
+    strip.setPixelColor(23, explosion1);
+    strip.show();
+    delay(100);    
+
+    strip.setPixelColor(25, illumination);
+    strip.setPixelColor(24, illumination);
+    strip.setPixelColor(23, illumination);
+    strip.show();
 }
 
