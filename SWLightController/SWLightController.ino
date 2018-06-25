@@ -224,7 +224,7 @@ void moveFleet() {
 
 
   // Cruise in light speed
-  for (j=1; j< 1000; j++) {
+  for (j=1; j< 1500; j++) {
 
 
     for (i=strip.numPixels()-1; i>0; i--) {
@@ -244,7 +244,7 @@ void moveFleet() {
     }
     
     strip.show();
-    delay(20);
+    delay(10);
   }
 
 
