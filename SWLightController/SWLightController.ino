@@ -142,6 +142,9 @@ void setup() {
   // Method to turn off all lights
   server.on("/off", lightOff);
 
+  // Method to turn off all lights
+  server.on("/moveFleet", moveFleet);
+
   // Hanle our wonderful 404 error
   server.onNotFound(handleNotFound);
 
@@ -162,10 +165,94 @@ void loop() {
 }
 
 
+// Create the effect of the fleet moving by having a 
+// star 'shimmer' variance move backwards relative to the ships.
+void moveFleet() {
+
+  // TODO: Imporve this so it fades in from whatever color is currently on.
+
+  uint16_t i, j, r, g, b;
+
+  server.send(200, "text/plain", "Fleet in motion!");
+
+  // First Flash to hyperspace...
+
+  r = 1;
+  g = 1;
+  b = 1;
+
+  for (j=0; j<200; j++) {
+    for (i=0; i< strip.numPixels(); i++) {
+      strip.setPixelColor(i, r, g, b);
+    }
+    r = r+1;
+    g = g+1;
+    b = b+1;
+    strip.show();
+    delay(5);
+  }
+  delay(250);
+
+
+  // Fade to light speed.
+  for (j=200; j < 220; j--) {  //rely on buffer overflow to stop
+
+
+    for (i=0; i< strip.numPixels(); i++) {
+      strip.setPixelColor(i, j, j, j);
+    }
+    strip.show();
+  }
+
+
+  // Cruise in light speed
+  for (j=1; j< 1000; j++) {
+
+
+    for (i=strip.numPixels()-1; i>0; i--) {
+      strip.setPixelColor(i, strip.getPixelColor(i-1));
+    }
+
+    uint16_t flicker = random(0,60);
+    if (flicker < 51) {
+  //    flicker = flicker * 15;
+      strip.setPixelColor(0, 0);
+    } else {
+      if (flicker < 56) {
+        strip.setPixelColor(0, 70+flicker, 70, 60);
+      } else {
+        strip.setPixelColor(0, 70+flicker, 70, 80+flicker);
+      }
+    }
+    
+    strip.show();
+    delay(20);
+  }
+
+
+  // Fade to cruise speed
+  for (j=200; j < 220; j--) {  //rely on buffer overflow to stop
+
+
+    for (i=0; i< strip.numPixels(); i++) {
+      strip.setPixelColor(i, j, j, j);
+    }
+    strip.show();
+    delay(3);
+  }
+
+  // Cruise settings
+    for (i=0; i< strip.numPixels(); i++) {
+      strip.setPixelColor(i, 6, 13, 9);
+    }
+    strip.show();
+  
+}
+
 // Method to shut off all lights
 void lightOff() {
   // Set all pixels to 'off'
-  for (uint32_t i=0; i< strip.numPixels(); i++) {
+  for (uint16_t i=0; i< strip.numPixels(); i++) {
     strip.setPixelColor(i, 0);
   }
   strip.show();
@@ -204,6 +291,4 @@ void lightOn() {
   strip.show();
 
   server.send(200, "text/plain", "Light turned on!");
-
-  delay(20);
 }
