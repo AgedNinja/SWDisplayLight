@@ -332,7 +332,7 @@ void battle() {
   uint32_t illumination = strip.Color(6, 13, 9);
   uint32_t turbolaser = strip.Color(0, 255, 0);
   uint32_t rebellaser = strip.Color(255, 0, 0);
-  uint32_t explosion = strip.Color(255, 255, 255);
+  uint32_t explosion = strip.Color(130, 35, 0);
   uint32_t explosion1 = strip.Color(255, 195, 77);
 
   for (i=0; i< strip.numPixels(); i++) {
