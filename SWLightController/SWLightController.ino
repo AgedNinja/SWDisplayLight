@@ -100,6 +100,12 @@ void setup() {
     else // U_SPIFFS
       type = "filesystem";
 
+    // Set the strip to Orange to let us know an update is happening...
+    for (uint16_t i=0; i< strip.numPixels(); i++) {
+      strip.setPixelColor(i, 174, 53, 0);
+    }
+    strip.show();
+
     // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
     Serial.println("Start updating " + type);  
   });
@@ -111,6 +117,15 @@ void setup() {
 
   // Lifecycle callback to show current progress of an Over the Air update
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+
+    // Show a 'progress bar' during the upload on the LED strip.
+    for (uint16_t i=0; i< strip.numPixels(); i++) {
+      if (i < ((progress / (total / 100))/2)) {
+        strip.setPixelColor(i, 0, 60, 0);
+      }
+    }
+    strip.show();
+    
     Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
   });
 
@@ -292,3 +307,4 @@ void lightOn() {
 
   server.send(200, "text/plain", "Light turned on!");
 }
+
